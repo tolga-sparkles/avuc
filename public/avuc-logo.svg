@@ -1,0 +1,42 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="teal" x1="118" y1="72" x2="358" y2="428" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#28C9B8"/>
+      <stop offset="1" stop-color="#00789B"/>
+    </linearGradient>
+    <linearGradient id="tealLight" x1="157" y1="246" x2="307" y2="361" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#28D2C5"/>
+      <stop offset="1" stop-color="#006E9C"/>
+    </linearGradient>
+    <linearGradient id="heart" x1="198" y1="142" x2="298" y2="251" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF8D62"/>
+      <stop offset="1" stop-color="#FF563F"/>
+    </linearGradient>
+    <filter id="softShadow" x="56" y="54" width="398" height="386" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#0F172A" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#softShadow)">
+    <path
+      d="M256 61C172.3 61 104.5 128.8 104.5 212.5C104.5 237 110.3 260.2 120.7 280.7C127.1 293.3 143 297.3 154 288.4C162.2 281.8 164.4 270.3 159.8 260.8C152.9 246.5 149 230.1 149 212.5C149 153.4 196.9 105.5 256 105.5C315.1 105.5 363 153.4 363 212.5C363 246.5 347.1 276.8 322.4 296.4C315.2 302.1 313.8 312.3 319.4 319.6C324.8 326.7 334.9 328.3 342.2 323.1C382.1 294.8 408 248.3 408 212.5C408 128.8 340.2 61 256 61Z"
+      fill="url(#teal)"
+    />
+    <path
+      d="M106.3 279.7C121.8 268.7 143.2 269.3 161.1 278.1L210.2 302.3C231.4 312.8 256 315.2 278.8 309.1C295.1 304.8 312 315.6 314.1 332.4C315.7 344.9 308.3 356.9 296.4 361.1C256.3 375.2 213.4 370.7 177.1 351.2C190 368.4 221.7 381.5 256.3 381.5C291 381.5 322.5 369.4 339.6 347.4L382.4 287.8C390.8 276.1 405.9 271.7 416 279.3C426.7 287.4 428.1 303.9 419 317L374.1 381.3C343.7 424.8 298.7 449.6 256.3 449.6C213.4 449.6 162.1 420.5 121.8 390.8C91.9 368.8 69.2 341.8 80.2 312.5C84.7 300.6 94.5 288.1 106.3 279.7Z"
+      fill="url(#teal)"
+    />
+
+    <path
+      d="M263.7 242.1C259 245.5 252.7 245.5 248 242.1C207.4 213.3 181 190.2 181 159.8C181 136.2 199.6 118 222.7 118C236.2 118 248 124.3 255.8 135.1C263.7 124.3 275.9 118 289.3 118C312.4 118 331 136.2 331 159.8C331 190.2 304.3 213.3 263.7 242.1Z"
+      fill="url(#heart)"
+    />
+
+    <path d="M184 255L256 231L328 255L256 282L184 255Z" fill="#23C5C8"/>
+    <path d="M184 255L256 282V336L184 307V255Z" fill="url(#tealLight)"/>
+    <path d="M328 255L256 282V336L328 307V255Z" fill="#007AA5"/>
+    <path d="M256 231L292 243L221 270L184 255L256 231Z" fill="#37D6D2"/>
+    <path d="M292 243L328 255L256 282L221 270L292 243Z" fill="#84F0E9"/>
+    <path d="M249 280L264 274V319L256.5 312.5L249 319V280Z" fill="#E9FBFF"/>
+  </g>
+</svg>
