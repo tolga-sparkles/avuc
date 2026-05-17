@@ -90,7 +90,7 @@ export default function MatchingPage({ onToast }) {
                     <p className="text-sm font-black text-avuc-text">{suggestion.type}</p>
                     <p className="mt-1 text-sm text-avuc-muted">{suggestion.location}</p>
                     <p className="mt-2 text-xs font-semibold text-avuc-muted">{suggestion.offered}</p>
-                    <PrimaryButton onClick={() => onToast('Eşleşme önerisi güvenli kanala gönderildi')} className="mt-3 w-full min-h-10 py-2">Eşleşme öner</PrimaryButton>
+                    <PrimaryButton onClick={() => onToast('Yakında')} className="mt-3 w-full min-h-10 py-2">Eşleşme öner</PrimaryButton>
                   </div>
                 )) : (
                   <EmptyState title="Yakın öneri yok" description="Yeni araç, depo veya gönüllü ilanı geldiğinde burada görünecek." />
@@ -143,7 +143,7 @@ function AidListingCard({ listing, selected, onSelect, onToast }) {
       </div>
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
         <PrimaryButton onClick={onSelect} variant={selected ? 'green' : 'blue'}>{selected ? 'Seçildi' : 'İlanı seç'}</PrimaryButton>
-        <PrimaryButton onClick={() => onToast('Eşleşme önerisi kaydedildi')} variant="light">Eşleşme öner</PrimaryButton>
+        <PrimaryButton onClick={() => onToast('Yakında')} variant="light">Eşleşme öner</PrimaryButton>
       </div>
     </article>
   )

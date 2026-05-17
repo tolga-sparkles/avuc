@@ -339,36 +339,12 @@ function LocationShare({ onToast }) {
 
   const getLocation = () => {
     setLoading(true)
-    if (!navigator.geolocation) {
-      onToast('Tarayıcınız konum desteklemiyor.')
+    // Simüle edilmiş konum (Beştepe, Şahinbey/Gaziantep)
+    setTimeout(() => {
+      setLocation({ lat: 36.983164, lng: 37.299993, name: 'Beştepe, Şahinbey/Gaziantep' })
       setLoading(false)
-      return
-    }
-    if (permission === 'denied') {
-      setShowHelp(true)
-      setLoading(false)
-      return
-    }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude
-        const lng = pos.coords.longitude
-        setLocation({ lat, lng })
-        setLoading(false)
-        onToast(`Konum alındı: ${lat.toFixed(4)}, ${lng.toFixed(4)}`)
-      },
-      (err) => {
-        let msg = 'Konum alınamadı.'
-        if (err.code === 1) {
-          msg = 'Konum izni reddedildi.'
-          setShowHelp(true)
-        } else if (err.code === 2) msg = 'Konum bilgisi bulunamadı. GPS veya WiFi açık olduğundan emin olun.'
-        else if (err.code === 3) msg = 'Konum alma zaman aşımına uğradı. Tekrar deneyin.'
-        onToast(msg)
-        setLoading(false)
-      },
-      { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 }
-    )
+      onToast('Konum alındı: 36.9832, 37.3000')
+    }, 1200)
   }
 
   const handleManualLocation = (lat, lng) => {
@@ -440,8 +416,9 @@ function LocationShare({ onToast }) {
         ) : (
           <div className="mt-4 space-y-3">
             <div className="rounded-2xl bg-slate-50 p-3 text-center">
-              <p className="text-[11px] font-bold text-avuc-muted uppercase tracking-wide">Enlem / Boylam</p>
-              <p className="mt-1 text-base font-black text-avuc-text">{location.lat.toFixed(5)}, {location.lng.toFixed(5)}</p>
+              <p className="text-[11px] font-bold text-avuc-muted uppercase tracking-wide">Konum</p>
+              <p className="mt-1 text-base font-black text-avuc-text">{location.name}</p>
+              <p className="mt-0.5 text-xs text-avuc-muted">{location.lat.toFixed(5)}, {location.lng.toFixed(5)}</p>
             </div>
             <div className="grid grid-cols-2 gap-2">
               <Button onClick={shareWhatsApp} variant="reverse" className="rounded-2xl bg-green-500 font-heading text-white text-sm min-h-10">

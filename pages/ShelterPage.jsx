@@ -154,8 +154,8 @@ function ShelterCard({ listing, onToast }) {
         <Badge className="border-avuc-line bg-white text-avuc-muted">{listing.gender}</Badge>
       </div>
       <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-        <PrimaryButton onClick={() => onToast('İletişim talebi güvenli kanal üzerinden gönderildi')} className="flex-1">İletişime geç</PrimaryButton>
-        <PrimaryButton onClick={() => onToast('İlan bildirimi admin paneline iletildi')} variant="light" className="flex-1">İlanı bildir</PrimaryButton>
+        <PrimaryButton onClick={() => onToast('Yakında')} className="flex-1">İletişime geç</PrimaryButton>
+        <PrimaryButton onClick={() => onToast('Yakında')} variant="light" className="flex-1">İlanı bildir</PrimaryButton>
       </div>
     </article>
   )

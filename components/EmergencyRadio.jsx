@@ -7,6 +7,13 @@ function classNames(...classes) {
 
 const STATIONS = [
   {
+    id: 'trt-radyo1',
+    name: 'TRT Radyo 1',
+    desc: 'Turkish official emergency broadcasts',
+    country: 'Turkey',
+    stream: 'https://nmicenotrt.mediatriple.net/trt_radyo_1.aac',
+  },
+  {
     id: 'bbc-world',
     name: 'BBC World Service',
     desc: '24/7 Global news & emergency info (English)',
@@ -35,13 +42,6 @@ const STATIONS = [
     stream: 'https://dw.audiostream.io/dw/1028/mp3/64/dw07',
   },
   {
-    id: 'trt-radyo1',
-    name: 'TRT Radyo 1',
-    desc: 'Turkish official emergency broadcasts',
-    country: 'Turkey',
-    stream: 'https://nmicenotrt.mediatriple.net/trt_radyo_1.aac',
-  },
-  {
     id: 'rne',
     name: 'RNE Radio Nacional',
     desc: 'Spain national radio (Spanish)',
@@ -50,14 +50,13 @@ const STATIONS = [
   },
 ]
 
-function Visualizer({ audioRef, isPlaying }) {
+function Visualizer({ isPlaying }) {
   const canvasRef = useRef(null)
   const animationRef = useRef(null)
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current
-    const audio = audioRef.current
-    if (!canvas || !audio) return
+    if (!canvas) return
 
     const ctx = canvas.getContext('2d')
     const width = canvas.width
@@ -83,7 +82,7 @@ function Visualizer({ audioRef, isPlaying }) {
     }
 
     animationRef.current = requestAnimationFrame(draw)
-  }, [audioRef, isPlaying])
+  }, [isPlaying])
 
   useEffect(() => {
     if (isPlaying) {
@@ -120,23 +119,32 @@ export default function EmergencyRadio({ compact = false }) {
   const audioRef = useRef(null)
 
   useEffect(() => {
-    audioRef.current = new Audio()
-    audioRef.current.crossOrigin = 'anonymous'
-    audioRef.current.volume = volume
+    const audio = new Audio()
+    audio.crossOrigin = 'anonymous'
+    audio.volume = volume
+    audioRef.current = audio
 
-    const audio = audioRef.current
-    const handleCanPlay = () => { setLoading(false); setIsPlaying(true) }
-    const handleError = () => { setLoading(false); setError(true); setIsPlaying(false) }
+    const handleCanPlay = () => {
+      setLoading(false)
+      setIsPlaying(true)
+      setError(false)
+    }
+    const handleError = (e) => {
+      console.error('[EmergencyRadio] audio error', e)
+      setLoading(false)
+      setError(true)
+      setIsPlaying(false)
+    }
     const handleEnded = () => setIsPlaying(false)
 
-    audio.addEventListener('canplay', handleCanPlay)
+    audio.addEventListener('canplaythrough', handleCanPlay)
     audio.addEventListener('error', handleError)
     audio.addEventListener('ended', handleEnded)
 
     return () => {
       audio.pause()
       audio.src = ''
-      audio.removeEventListener('canplay', handleCanPlay)
+      audio.removeEventListener('canplaythrough', handleCanPlay)
       audio.removeEventListener('error', handleError)
       audio.removeEventListener('ended', handleEnded)
     }
@@ -157,10 +165,12 @@ export default function EmergencyRadio({ compact = false }) {
     setError(false)
     setLoading(true)
     setActiveStation(station)
-    audioRef.current.src = station.stream
-    audioRef.current.load()
-    audioRef.current.play().catch((err) => {
-      console.error('Audio play error:', err)
+
+    const audio = audioRef.current
+    audio.pause()
+    audio.src = station.stream
+    audio.play().catch((err) => {
+      console.error('[EmergencyRadio] play() error:', err)
       setLoading(false)
       setError(true)
       setIsPlaying(false)
@@ -169,12 +179,24 @@ export default function EmergencyRadio({ compact = false }) {
 
   const togglePlay = () => {
     if (!activeStation) return
+    const audio = audioRef.current
     if (isPlaying) {
-      audioRef.current.pause()
+      audio.pause()
       setIsPlaying(false)
     } else {
-      audioRef.current.play().catch(() => setError(true))
-      setIsPlaying(true)
+      setLoading(true)
+      audio.play()
+        .then(() => {
+          setLoading(false)
+          setIsPlaying(true)
+          setError(false)
+        })
+        .catch((err) => {
+          console.error('[EmergencyRadio] togglePlay error:', err)
+          setLoading(false)
+          setError(true)
+          setIsPlaying(false)
+        })
     }
   }
 
@@ -213,7 +235,7 @@ export default function EmergencyRadio({ compact = false }) {
       </div>
 
       <div className="mt-4">
-        <Visualizer audioRef={audioRef} isPlaying={isPlaying} />
+        <Visualizer isPlaying={isPlaying} />
       </div>
 
       {error && (

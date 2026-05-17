@@ -29,19 +29,19 @@ export default function HomePage({ onNavigate }) {
 
   return (
     <div className="space-y-12 pb-20">
-      <section className="relative -mt-12 overflow-hidden rounded-b-[2.5rem] bg-transparent pt-12">
-        <div className="absolute left-8 top-6 h-24 w-24 rounded-full bg-avuc-lightBlue/60 blur-2xl" />
-        <div className="absolute bottom-6 right-12 h-32 w-32 rounded-full bg-avuc-lightGreen/60 blur-2xl" />
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:py-12">
+      <section className="relative overflow-hidden rounded-b-[2.5rem] bg-transparent">
+        <div className="absolute left-8 top-2 h-24 w-24 rounded-full bg-avuc-lightBlue/60 blur-2xl" />
+        <div className="absolute bottom-4 right-12 h-32 w-32 rounded-full bg-avuc-lightGreen/60 blur-2xl" />
+        <div className="mx-auto grid max-w-7xl gap-5 px-4 py-4 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:py-6">
           <div className="relative z-10 flex flex-col justify-center">
             <Badge className="w-fit border-avuc-blue/20 bg-avuc-lightBlue text-avuc-darkBlue">Koordinasyon ağı</Badge>
-            <h1 className="mt-5 max-w-3xl text-3xl font-black tracking-tight text-avuc-text sm:text-4xl lg:text-[2.8rem] lg:leading-[1.05]">
+            <h1 className="mt-3 max-w-3xl text-3xl font-black tracking-tight text-avuc-text sm:text-4xl lg:text-[2.8rem] lg:leading-[1.05]">
               Afet Anında Yardımı Doğru Kişiye Ulaştır
             </h1>
-            <p className="mt-4 max-w-lg text-[15px] leading-7 text-avuc-muted">
+            <p className="mt-3 max-w-lg text-[15px] leading-7 text-avuc-muted">
               Barınma, lojistik ve bağışı tek akışta eşleştirir.
             </p>
-            <div className="mt-6 grid gap-2.5 sm:grid-cols-2">
+            <div className="mt-5 grid gap-2.5 sm:grid-cols-2">
               <button
                 onClick={() => onNavigate('shelter')}
                 className="inline-flex items-center justify-start gap-3 rounded-[16px] bg-avuc-blue px-4 py-3 text-sm font-bold text-white shadow-[0_4px_14px_rgba(37,99,235,0.25)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-600 hover:shadow-[0_6px_20px_rgba(37,99,235,0.35)]"
@@ -71,7 +71,7 @@ export default function HomePage({ onNavigate }) {
                 <span>Bağış Yap</span>
               </button>
             </div>
-            <div className="mt-5 grid grid-cols-3 gap-3 text-center">
+            <div className="mt-4 grid grid-cols-3 gap-3 text-center">
               {[
                 [248, 'Aktif ilan'],
                 [71, 'Eşleşen yardım'],
@@ -93,7 +93,7 @@ export default function HomePage({ onNavigate }) {
               <p className="mt-2 max-w-xs text-sm leading-6 text-avuc-muted">Afet ağı gerçek zamanlı olarak toplanmaktadır.</p>
             </div>
             <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_52%_58%,rgba(219,234,254,0.5),transparent_48%),radial-gradient(circle_at_76%_72%,rgba(220,252,231,0.42),transparent_36%)]" />
-            <GlobeLive className="relative z-10 mt-14 w-[min(390px,118%)] max-w-none sm:w-[min(560px,125%)] lg:mt-8 lg:w-[min(900px,160%)]" />
+            <GlobeLive className="relative z-10 mt-8 w-[min(390px,118%)] max-w-none sm:w-[min(560px,125%)] lg:mt-4 lg:w-[min(900px,160%)]" />
           </div>
         </div>
       </section>

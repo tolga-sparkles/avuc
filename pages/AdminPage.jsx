@@ -232,7 +232,7 @@ export default function AdminPage({ onToast }) {
             <AdminPanel title="Acil ihtiyaç ve afet bölgesi ekle">
               <form className="grid gap-3" onSubmit={(event) => {
                 event.preventDefault()
-                onToast('Yeni acil ihtiyaç taslağı oluşturuldu')
+                onToast('Yakında')
               }}>
                 <TextInput label="Konum" placeholder="Hatay / Antakya" />
                 <TextInput label="İhtiyaç" placeholder="20 kişilik sıcak yemek" />
@@ -250,10 +250,10 @@ export default function AdminPage({ onToast }) {
                   </div>
                 ))}
                 <div className="grid gap-2 sm:grid-cols-2">
-                  <PrimaryButton variant="light">Kullanıcı doğrulamaları</PrimaryButton>
-                  <PrimaryButton variant="light">Gönüllü görevi oluştur</PrimaryButton>
-                  <PrimaryButton variant="light">Tamamlanan yardımlar</PrimaryButton>
-                  <PrimaryButton variant="light">Kurum onayları</PrimaryButton>
+                  <PrimaryButton variant="light" onClick={() => onToast('Yakında')}>Kullanıcı doğrulamaları</PrimaryButton>
+                  <PrimaryButton variant="light" onClick={() => onToast('Yakında')}>Gönüllü görevi oluştur</PrimaryButton>
+                  <PrimaryButton variant="light" onClick={() => onToast('Yakında')}>Tamamlanan yardımlar</PrimaryButton>
+                  <PrimaryButton variant="light" onClick={() => onToast('Yakında')}>Kurum onayları</PrimaryButton>
                 </div>
               </div>
             </AdminPanel>
