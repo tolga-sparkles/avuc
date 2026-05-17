@@ -125,7 +125,7 @@ function App() {
           </div>
         )}
         <Header activePage={activePage} onNavigate={navigate} onLogin={() => setLoginOpen(true)} user={user} isLoggedIn={isLoggedIn} isAdmin={isAdmin} onLogout={logout} />
-        <div className="animate-slide-up" key={activePage}>{page}</div>
+        <div className="animate-slide-up pt-20 sm:pt-24" key={activePage}>{page}</div>
         <FloatingEmergencyButton onClick={() => { setShake(true); setEmergencyOpen(true); setTimeout(() => setShake(false), 700); }} />
         <MobileBottomNav activePage={activePage} onNavigate={navigate} />
         <EmergencyModal open={emergencyOpen} onClose={() => setEmergencyOpen(false)} onSubmit={showToast} onLoginRequired={() => setLoginOpen(true)} />

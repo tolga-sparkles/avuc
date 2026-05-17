@@ -1,7 +1,5 @@
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Home, Shield, CloudRain, Radio, Map, PackagePlus, HandCoins, AlertOctagon, LogIn, LogOut, User, Menu, X } from 'lucide-react'
-import { useAuth } from '@/context/AuthContext'
+import { Home, Shield, CloudRain, Radio, Map, PackagePlus, HandCoins, AlertOctagon, LogIn, LogOut, User, Menu, X, Siren } from 'lucide-react'
 import { classNames } from '@/utils/classNames'
 
 const navItems = [
@@ -29,10 +27,10 @@ function MenuGroup({ title, items, activePage, onNavigate }) {
               onClick={() => onNavigate(item.id)}
               className={classNames(
                 'flex items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-semibold transition active:scale-95',
-                isActive ? 'bg-slate-100 text-slate-900' : 'text-slate-500 hover:bg-slate-50',
+                isActive ? 'bg-[#dbeafe] text-slate-950 shadow-sm' : 'text-slate-500 hover:bg-white/55',
               )}
             >
-              {Icon && <Icon className="h-3.5 w-3.5 shrink-0" />}
+              {Icon && <Icon className={classNames('h-3.5 w-3.5 shrink-0', isActive ? 'text-blue-600' : 'text-slate-500')} strokeWidth={2.2} />}
               {item.label}
             </button>
           )
@@ -51,19 +49,17 @@ export function Header({ activePage, onNavigate, onLogin, user, isLoggedIn, isAd
   }
 
   return (
-    <header className="sticky top-2 z-50 px-3 sm:px-4">
-      <nav className="mx-auto flex max-w-5xl items-center justify-between rounded-2xl border border-slate-200/60 bg-white/80 px-4 py-2.5 shadow-[0_2px_16px_rgba(15,23,42,0.05)] backdrop-blur-md">
-        {/* Logo */}
+    <header className="fixed left-0 right-0 top-3 z-50 px-3 sm:px-4">
+      <nav className="mx-auto flex max-w-6xl items-center gap-3">
         <button
           onClick={() => goTo('home')}
-          className="flex shrink-0 items-center gap-2 rounded-xl px-2 py-1.5 transition hover:bg-slate-50"
+          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] bg-white/35 shadow-[0_14px_34px_rgba(15,23,42,0.06)] backdrop-blur-2xl transition hover:bg-white/60 sm:h-16 sm:w-16"
           aria-label="avuc ana sayfa"
         >
-          <img src="/avuc-logo.svg" alt="avuc" className="h-9 w-auto object-contain" />
+          <img src="/avuc-logo.svg" alt="avuc" className="h-10 w-auto object-contain sm:h-12" />
         </button>
 
-        {/* Desktop Navigation */}
-        <div className="hidden items-center gap-0.5 lg:flex">
+        <div className="hidden min-h-16 flex-1 items-center justify-around rounded-[18px] bg-white/35 px-5 shadow-[0_14px_34px_rgba(15,23,42,0.06)] backdrop-blur-2xl lg:flex">
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive = activePage === item.id
@@ -72,77 +68,65 @@ export function Header({ activePage, onNavigate, onLogin, user, isLoggedIn, isAd
                 key={item.id}
                 onClick={() => goTo(item.id)}
                 className={classNames(
-                  'relative flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-all duration-150',
+                  'relative inline-flex items-center gap-2 rounded-[12px] px-4 py-2 text-base font-medium tracking-[-0.03em] text-slate-950 transition-all duration-200',
                   isActive
-                    ? item.primary
-                      ? 'bg-orange-500 text-white shadow-sm'
-                      : 'bg-slate-100 text-slate-900'
-                    : item.primary
-                      ? 'text-orange-600 hover:bg-orange-50'
-                      : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700',
+                    ? 'bg-[#dbeafe] font-semibold shadow-sm'
+                    : 'hover:bg-white/45 hover:text-slate-700',
                 )}
               >
-                {Icon && <Icon className="h-4 w-4" />}
+                {Icon && <Icon className={classNames('h-4 w-4 shrink-0', isActive ? 'text-blue-600' : 'text-slate-500')} strokeWidth={2.2} />}
                 <span>{item.label}</span>
-                {isActive && !item.primary && (
-                  <span className="absolute bottom-1 left-1/2 h-0.5 w-4 -translate-x-1/2 rounded-full bg-slate-400" />
-                )}
               </button>
             )
           })}
-        </div>
 
-        {/* Right side: User actions */}
-        <div className="hidden items-center gap-1 lg:flex">
           {isAdmin && (
             <button
               onClick={() => goTo('admin')}
               className={classNames(
-                'rounded-xl px-3.5 py-2.5 text-sm font-semibold transition',
-                activePage === 'admin' ? 'bg-slate-100 text-slate-900' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700',
+                'inline-flex items-center gap-2 rounded-[12px] px-4 py-2 text-base font-medium tracking-[-0.03em] text-slate-950 transition-all duration-200',
+                activePage === 'admin' ? 'bg-[#dbeafe] font-semibold shadow-sm' : 'hover:bg-white/45 hover:text-slate-700',
               )}
             >
+              <User className={classNames('h-4 w-4 shrink-0', activePage === 'admin' ? 'text-blue-600' : 'text-slate-500')} strokeWidth={2.2} />
               Admin
             </button>
           )}
 
-          <div className="mx-1.5 h-5 w-px bg-slate-200" />
-
           {isLoggedIn ? (
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => goTo('profile')}
                 className={classNames(
-                  'flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition',
-                  activePage === 'profile' ? 'bg-slate-100 text-slate-900' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700',
+                  'inline-flex items-center gap-2 rounded-[12px] px-4 py-2 text-base font-medium tracking-[-0.03em] text-slate-950 transition-all duration-200',
+                  activePage === 'profile' ? 'bg-[#dbeafe] font-semibold shadow-sm' : 'hover:bg-white/45 hover:text-slate-700',
                 )}
               >
-                <User className="h-4 w-4" />
+                <User className={classNames('h-4 w-4 shrink-0', activePage === 'profile' ? 'text-blue-600' : 'text-slate-500')} strokeWidth={2.2} />
                 <span className="max-w-[100px] truncate">{user?.name || 'Profil'}</span>
               </button>
               <button
                 onClick={onLogout}
-                className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold text-slate-400 transition hover:bg-slate-50 hover:text-slate-600"
+                className="flex h-10 w-10 items-center justify-center rounded-[12px] text-slate-500 transition hover:bg-white/45 hover:text-slate-800"
                 title="Çıkış yap"
               >
-                <LogOut className="h-3.5 w-3.5" />
+                <LogOut className="h-4 w-4" />
               </button>
             </div>
           ) : (
             <button
               onClick={onLogin}
-              className="flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
+              className="inline-flex items-center gap-2 rounded-[16px] bg-[#dbeafe] px-5 py-2.5 text-base font-semibold tracking-[-0.03em] text-slate-950 shadow-sm transition hover:bg-blue-100"
             >
-              <LogIn className="h-4 w-4" />
-              Giriş
+              <LogIn className="h-4 w-4 text-blue-600" strokeWidth={2.2} />
+              Giriş Yap
             </button>
           )}
         </div>
 
-        {/* Mobile menu toggle */}
         <button
           onClick={() => setOpen((v) => !v)}
-          className="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 lg:hidden"
+          className="ml-auto flex h-12 w-12 items-center justify-center rounded-[16px] bg-white/35 text-slate-500 shadow-[0_14px_34px_rgba(15,23,42,0.06)] backdrop-blur-2xl transition hover:bg-white/60 lg:hidden"
           aria-expanded={open}
           aria-controls="mobile-menu"
         >
@@ -154,7 +138,7 @@ export function Header({ activePage, onNavigate, onLogin, user, isLoggedIn, isAd
       {open && (
         <div
           id="mobile-menu"
-          className="mx-auto mt-2 max-w-md rounded-2xl border border-slate-200/60 bg-white/95 p-3 shadow-[0_8px_32px_rgba(15,23,42,0.08)] backdrop-blur-xl lg:hidden"
+          className="mx-auto mt-2 max-w-md rounded-[18px] border border-white/45 bg-white/45 p-3 shadow-[0_14px_40px_rgba(15,23,42,0.06)] backdrop-blur-2xl lg:hidden"
         >
           <MenuGroup title="Yardım" items={[
             { id: 'emergency', label: 'Acil Durum', icon: Siren },
@@ -176,10 +160,10 @@ export function Header({ activePage, onNavigate, onLogin, user, isLoggedIn, isAd
                 onClick={() => goTo('admin')}
                 className={classNames(
                   'flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold transition',
-                  activePage === 'admin' ? 'bg-slate-100 text-slate-900' : 'text-slate-500 hover:bg-slate-50',
+                  activePage === 'admin' ? 'bg-[#dbeafe] text-slate-950 shadow-sm' : 'text-slate-500 hover:bg-white/55',
                 )}
               >
-                <User className="h-4 w-4" />
+                <User className={classNames('h-4 w-4', activePage === 'admin' ? 'text-blue-600' : 'text-slate-500')} strokeWidth={2.2} />
                 Admin Paneli
               </button>
             </div>
