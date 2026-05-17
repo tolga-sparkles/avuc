@@ -4,7 +4,7 @@
 
 ---
 
-## 1. Form Doğrulama ve Validasyon Katmanı
+## 1. Form Doğrulama ve Validasyon Katmanıaar
 
 **Mevcut Durum:** Formlar HTML5 `required` attribütü ile sınırlı. Sunucu taraflı validasyon var ancak istemci taraflı detaylı geri bildirim yok.
 
