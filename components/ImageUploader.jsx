@@ -39,7 +39,7 @@ export default function ImageUploader({ images, onChange, maxImages = 5, maxSize
       <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
         {images.map((img) => (
           <div key={img.id} className="group relative aspect-square overflow-hidden rounded-2xl border border-border bg-slate-100">
-            <img src={img.preview} alt={img.name} className="h-full w-full object-cover" />
+            <img src={img.preview} alt={img.name} loading="lazy" className="h-full w-full object-cover" />
             <button
               type="button"
               onClick={() => removeImage(img.id)}

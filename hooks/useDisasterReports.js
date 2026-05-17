@@ -9,10 +9,13 @@ export function useDisasterReports() {
   const fetchReports = useCallback(async () => {
     try {
       setLoading(true)
+      setError(null)
       const { data } = await api.get('/reports')
       setReports(data.data || [])
     } catch (err) {
-      setError(err.response?.data?.message || 'İhbarlar alınamadı')
+      const msg = err.response?.data?.message || err.message || 'İhbarlar alınamadı'
+      console.error('[useDisasterReports] fetch error:', msg)
+      setError(msg)
     } finally {
       setLoading(false)
     }
@@ -24,10 +27,13 @@ export function useDisasterReports() {
     async function run() {
       try {
         setLoading(true)
+        setError(null)
         const { data } = await api.get('/reports')
         if (!cancelled) setReports(data.data || [])
       } catch (err) {
-        if (!cancelled) setError(err.response?.data?.message || 'İhbarlar alınamadı')
+        const msg = err.response?.data?.message || err.message || 'İhbarlar alınamadı'
+        console.error('[useDisasterReports] fetch error:', msg)
+        if (!cancelled) setError(msg)
       } finally {
         if (!cancelled) setLoading(false)
       }

@@ -155,8 +155,15 @@ function ReportForm({ onClose, onSubmitted }) {
 }
 
 export default function ReportsPage() {
-  const { reports, loading, refetch } = useDisasterReports()
+  const { reports, loading, error, refetch } = useDisasterReports()
   const [showForm, setShowForm] = useState(false)
+  const [submitMessage, setSubmitMessage] = useState('')
+
+  const handleSubmitted = () => {
+    setSubmitMessage('İhbarınız alındı. Admin onayından sonra yayınlanacak.')
+    refetch()
+    setTimeout(() => setSubmitMessage(''), 5000)
+  }
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -175,9 +182,15 @@ export default function ReportsPage() {
         </button>
       </div>
 
-      <DisasterReportsSection reports={reports} loading={loading} />
+      {submitMessage && (
+        <div className="mb-6 rounded-2xl border border-green-200 bg-green-50 p-4 text-sm font-bold text-green-700">
+          {submitMessage}
+        </div>
+      )}
 
-      {showForm && <ReportForm onClose={() => setShowForm(false)} onSubmitted={refetch} />}
+      <DisasterReportsSection reports={reports} loading={loading} error={error} />
+
+      {showForm && <ReportForm onClose={() => setShowForm(false)} onSubmitted={handleSubmitted} />}
     </main>
   )
 }

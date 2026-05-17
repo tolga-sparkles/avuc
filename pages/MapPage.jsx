@@ -32,7 +32,7 @@ export default function MapPage({ onNavigate }) {
         ))}
       </div>
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
-        <section className="relative min-h-[560px] overflow-hidden rounded-[2rem] border border-avuc-line bg-white shadow-soft">
+        <section className="relative min-h-[360px] overflow-hidden rounded-[2rem] border border-avuc-line bg-white shadow-soft md:min-h-[560px]">
           <div className="map-grid absolute inset-0" />
           <div className="absolute left-6 top-6 rounded-2xl border border-avuc-line bg-white/90 p-4 shadow-soft backdrop-blur">
             <p className="text-sm font-black text-avuc-text">Canlı koordinasyon katmanı</p>

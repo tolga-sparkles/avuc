@@ -16,17 +16,22 @@ import {
   Activity,
   Send,
   Siren,
+  ChevronDown,
+  ChevronUp,
+  Copy,
+  ExternalLink,
 } from 'lucide-react'
 import { api } from '@/services/api'
 import { useAuth } from '@/context/AuthContext'
 import { useLocationPermission, LocationPermissionGuide } from './LocationPermission'
+import EmergencyRadio from './EmergencyRadio'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
 function Badge({ children, className = '' }) {
-  return <span className={classNames('inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold', className)}>{children}</span>
+  return <span className={classNames('inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold', className)}>{children}</span>
 }
 
 // MORS KODU HARİTASI
@@ -57,7 +62,7 @@ const EMERGENCY_NUMBERS = [
 
 function SosAlarm() {
   const [isPlaying, setIsPlaying] = useState(false)
-  const [mode, setMode] = useState('intermittent') // 'continuous' | 'intermittent'
+  const [mode, setMode] = useState('intermittent')
   const audioCtxRef = useRef(null)
   const intervalRef = useRef(null)
 
@@ -84,7 +89,6 @@ function SosAlarm() {
     setIsPlaying(true)
 
     if (mode === 'continuous') {
-      // Sürekli wail siren: 400Hz -> 1200Hz -> 400Hz süpürme
       let rising = true
       let freq = 400
       intervalRef.current = setInterval(() => {
@@ -92,16 +96,18 @@ function SosAlarm() {
         if (freq >= 1200) rising = false
         if (freq <= 400) rising = true
         playTone(freq, 0.15, 'sawtooth')
+        if (navigator.vibrate) navigator.vibrate(100)
       }, 150)
     } else {
-      // Kesikli: 3 kısa bip + 1 uzun bip (SOS tarzı)
       let step = 0
       intervalRef.current = setInterval(() => {
         step = step % 5
         if (step < 3) {
-          playTone(880, 0.15, 'square') // kısa
+          playTone(880, 0.15, 'square')
+          if (navigator.vibrate) navigator.vibrate(100)
         } else if (step === 3) {
-          playTone(600, 0.5, 'square') // uzun
+          playTone(600, 0.5, 'square')
+          if (navigator.vibrate) navigator.vibrate(400)
         }
         step++
       }, 650)
@@ -129,18 +135,18 @@ function SosAlarm() {
   }, [mode]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="rounded-[2rem] border border-avuc-line bg-white p-6 shadow-soft">
+    <div className="rounded-[2rem] border border-avuc-line bg-white p-5 shadow-soft">
       <div className="flex items-center gap-3">
-        <div className={classNames('flex h-14 w-14 items-center justify-center rounded-2xl', isPlaying ? 'bg-avuc-red animate-pulse' : 'bg-slate-100')}>
-          {isPlaying ? <Volume2 className="h-7 w-7 text-white" /> : <VolumeX className="h-7 w-7 text-avuc-muted" />}
+        <div className={classNames('flex h-12 w-12 items-center justify-center rounded-2xl', isPlaying ? 'bg-avuc-red animate-pulse' : 'bg-slate-100')}>
+          {isPlaying ? <Volume2 className="h-6 w-6 text-white" /> : <VolumeX className="h-6 w-6 text-avuc-muted" />}
         </div>
         <div>
-          <h3 className="text-lg font-black text-avuc-text">Acil Durum Sireni</h3>
-          <p className="text-sm text-avuc-muted">Çevrenizdekilere sesli sinyal verin</p>
+          <h3 className="text-base font-black text-avuc-text">Acil Durum Sireni</h3>
+          <p className="text-xs text-avuc-muted">Sesli sinyal verin</p>
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-2">
+      <div className="mt-4 grid grid-cols-2 gap-2">
         <button
           onClick={() => setMode('continuous')}
           className={classNames(
@@ -168,7 +174,7 @@ function SosAlarm() {
       <Button
         onClick={isPlaying ? stopAlarm : startAlarm}
         variant="reverse"
-        className={classNames('mt-4 w-full min-h-12 rounded-2xl font-heading', isPlaying ? 'bg-avuc-red text-white animate-pulse' : 'bg-avuc-lightRed text-avuc-red')}
+        className={classNames('mt-4 w-full min-h-11 rounded-2xl font-heading text-sm', isPlaying ? 'bg-avuc-red text-white animate-pulse' : 'bg-avuc-lightRed text-avuc-red')}
       >
         {isPlaying ? 'Sireni Durdur' : 'Sireni Çal'}
       </Button>
@@ -181,25 +187,45 @@ function MorseLed() {
   const [isTransmitting, setIsTransmitting] = useState(false)
   const [currentSignal, setCurrentSignal] = useState('')
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const wakeLockRef = useRef(null)
 
   const textToMorse = (text) => {
     return text.toUpperCase().split('').map(ch => MORSE_CODE[ch] || '').join(' ')
   }
 
+  const acquireWakeLock = async () => {
+    if ('wakeLock' in navigator) {
+      try {
+        wakeLockRef.current = await navigator.wakeLock.request('screen')
+      } catch {
+        // Wake lock isteği reddedilebilir
+      }
+    }
+  }
+
+  const releaseWakeLock = () => {
+    if (wakeLockRef.current) {
+      wakeLockRef.current.release().catch(() => {})
+      wakeLockRef.current = null
+    }
+  }
+
   const transmit = useCallback(async (fullscreen = false) => {
     if (isTransmitting) return
     setIsTransmitting(true)
+    await acquireWakeLock()
     const morse = textToMorse(message)
     setCurrentSignal(morse)
 
     const container = document.getElementById(fullscreen ? 'morse-display-fullscreen' : 'morse-display')
-    if (!container) { setIsTransmitting(false); return }
+    if (!container) { setIsTransmitting(false); releaseWakeLock(); return }
 
     for (let i = 0; i < morse.length; i++) {
       const ch = morse[i]
       if (ch === '.') {
         container.style.backgroundColor = '#ef4444'
         container.style.boxShadow = fullscreen ? '0 0 120px rgba(239,68,68,1)' : '0 0 60px rgba(239,68,68,0.8)'
+        if (navigator.vibrate) navigator.vibrate(200)
         await new Promise(r => setTimeout(r, 200))
         container.style.backgroundColor = fullscreen ? '#000000' : '#1e293b'
         container.style.boxShadow = 'none'
@@ -207,6 +233,7 @@ function MorseLed() {
       } else if (ch === '-') {
         container.style.backgroundColor = '#ef4444'
         container.style.boxShadow = fullscreen ? '0 0 120px rgba(239,68,68,1)' : '0 0 60px rgba(239,68,68,0.8)'
+        if (navigator.vibrate) navigator.vibrate(600)
         await new Promise(r => setTimeout(r, 600))
         container.style.backgroundColor = fullscreen ? '#000000' : '#1e293b'
         container.style.boxShadow = 'none'
@@ -218,6 +245,7 @@ function MorseLed() {
       }
     }
     setIsTransmitting(false)
+    releaseWakeLock()
   }, [message, isTransmitting])
 
   const startFullscreen = async () => {
@@ -229,43 +257,42 @@ function MorseLed() {
 
   return (
     <>
-      <div className="rounded-[2rem] border border-avuc-line bg-white p-6 shadow-soft">
+      <div className="rounded-[2rem] border border-avuc-line bg-white p-5 shadow-soft">
         <div className="flex items-center gap-3">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100">
-            <Flashlight className="h-7 w-7 text-amber-600" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100">
+            <Flashlight className="h-6 w-6 text-amber-600" />
           </div>
           <div>
-            <h3 className="text-lg font-black text-avuc-text">Mors Kodu LED</h3>
-            <p className="text-sm text-avuc-muted">Mesajınızı ışık sinyallerine dönüştürün</p>
+            <h3 className="text-base font-black text-avuc-text">Mors Kodu LED</h3>
+            <p className="text-xs text-avuc-muted">Işık sinyalleri iletilsin</p>
           </div>
         </div>
 
-        <div className="mt-5">
-          <label className="block text-sm font-semibold text-avuc-text mb-2">Mesaj</label>
+        <div className="mt-4">
           <input
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             maxLength={20}
-            className="w-full rounded-2xl border border-border bg-bw px-4 py-3 text-sm font-base text-text shadow-shadow placeholder:text-slate-500"
+            className="w-full rounded-2xl border border-border bg-bw px-4 py-2.5 text-sm font-base text-text shadow-shadow placeholder:text-slate-500"
             placeholder="SOS"
           />
         </div>
 
         <div
           id="morse-display"
-          className="mt-4 flex h-24 items-center justify-center rounded-2xl bg-slate-800 transition-all duration-100"
+          className="mt-3 flex h-16 items-center justify-center rounded-2xl bg-slate-800 transition-all duration-100"
         >
-          <p className="text-xs font-mono text-slate-400 break-all px-4 text-center">
+          <p className="text-[11px] font-mono text-slate-400 break-all px-4 text-center">
             {textToMorse(message)}
           </p>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-3">
+        <div className="mt-3 grid grid-cols-2 gap-2">
           <Button
             onClick={() => transmit(false)}
             disabled={isTransmitting}
             variant="reverse"
-            className="min-h-12 rounded-2xl bg-amber-500 font-heading text-white disabled:opacity-50"
+            className="min-h-10 rounded-2xl bg-amber-500 font-heading text-white text-sm disabled:opacity-50"
           >
             {isTransmitting ? 'İletiliyor...' : 'Işık ile İlet'}
           </Button>
@@ -273,10 +300,10 @@ function MorseLed() {
             onClick={startFullscreen}
             disabled={isTransmitting}
             variant="reverse"
-            className="min-h-12 rounded-2xl bg-slate-800 font-heading text-white disabled:opacity-50"
+            className="min-h-10 rounded-2xl bg-slate-800 font-heading text-white text-sm disabled:opacity-50"
           >
             <Flashlight className="mr-2 h-4 w-4" />
-            Tam Ekran LED
+            Tam Ekran
           </Button>
         </div>
       </div>
@@ -362,51 +389,83 @@ function LocationShare({ onToast }) {
     window.open(`sms:?body=${encodeURIComponent(text)}`, '_blank')
   }
 
+  const copyLocation = () => {
+    if (!location) return
+    const url = `https://maps.google.com/?q=${location.lat},${location.lng}`
+    navigator.clipboard.writeText(url)
+    onToast('Konum linki kopyalandı')
+  }
+
+  const openMap = () => {
+    if (!location) return
+    window.open(`https://maps.google.com/?q=${location.lat},${location.lng}`, '_blank')
+  }
+
   return (
     <>
-      <div className="rounded-[2rem] border border-avuc-line bg-white p-6 shadow-soft">
+      <div className="rounded-[2rem] border border-avuc-line bg-white p-5 shadow-soft">
         <div className="flex items-center gap-3">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-green-100">
-            <MapPin className="h-7 w-7 text-green-600" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100">
+            <MapPin className="h-6 w-6 text-green-600" />
           </div>
           <div>
-            <h3 className="text-lg font-black text-avuc-text">Konum Paylaş</h3>
-            <p className="text-sm text-avuc-muted">Anlık konumunuzu paylaşın</p>
+            <h3 className="text-base font-black text-avuc-text">Konum Paylaş</h3>
+            <p className="text-xs text-avuc-muted">Anlık konumunuzu paylaşın</p>
           </div>
         </div>
 
         {permission === 'denied' && (
-          <div className="mt-4 rounded-2xl bg-amber-50 p-3 text-xs text-amber-700">
+          <div className="mt-3 rounded-2xl bg-amber-50 p-3 text-xs text-amber-700">
             <p className="font-bold">Konum izni kapalı.</p>
             <button onClick={() => setShowHelp(true)} className="mt-1 text-avuc-blue underline">Nasıl açılır?</button>
           </div>
         )}
 
-        <Button
-          onClick={getLocation}
-          disabled={loading}
-          variant="default"
-          className="mt-4 w-full min-h-12 rounded-2xl font-heading"
-        >
-          {loading ? 'Konum alınıyor...' : 'Konumumu Al'}
-        </Button>
-
-        {location && (
+        {!location ? (
+          <div className="mt-4 flex flex-col items-center text-center">
+            <div className="mb-3 flex h-20 w-20 items-center justify-center rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200">
+              <MapPin className="h-8 w-8 text-slate-300" />
+            </div>
+            <p className="text-sm font-semibold text-avuc-text">Henüz konum alınmadı</p>
+            <p className="mt-1 text-xs text-avuc-muted max-w-[220px]">Acil durumda hızlı paylaşım için konumunuzu alın</p>
+            <Button
+              onClick={getLocation}
+              disabled={loading}
+              variant="default"
+              className="mt-4 w-full min-h-11 rounded-2xl font-heading text-sm"
+            >
+              {loading ? 'Konum alınıyor...' : 'Konumumu Al'}
+            </Button>
+          </div>
+        ) : (
           <div className="mt-4 space-y-3">
-            <div className="rounded-2xl bg-slate-50 p-4 text-center">
-              <p className="text-xs font-bold text-avuc-muted">Enlem / Boylam</p>
-              <p className="mt-1 text-lg font-black text-avuc-text">{location.lat.toFixed(5)}, {location.lng.toFixed(5)}</p>
+            <div className="rounded-2xl bg-slate-50 p-3 text-center">
+              <p className="text-[11px] font-bold text-avuc-muted uppercase tracking-wide">Enlem / Boylam</p>
+              <p className="mt-1 text-base font-black text-avuc-text">{location.lat.toFixed(5)}, {location.lng.toFixed(5)}</p>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <Button onClick={shareWhatsApp} variant="reverse" className="rounded-2xl bg-green-500 font-heading text-white">
+              <Button onClick={shareWhatsApp} variant="reverse" className="rounded-2xl bg-green-500 font-heading text-white text-sm min-h-10">
                 <MessageCircle className="mr-2 h-4 w-4" />
                 WhatsApp
               </Button>
-              <Button onClick={shareSms} variant="neutral" className="rounded-2xl font-heading">
+              <Button onClick={shareSms} variant="neutral" className="rounded-2xl font-heading text-sm min-h-10">
                 <Send className="mr-2 h-4 w-4" />
                 SMS
               </Button>
             </div>
+            <div className="grid grid-cols-2 gap-2">
+              <Button onClick={copyLocation} variant="reverse" className="rounded-2xl bg-slate-100 font-heading text-avuc-text text-sm min-h-9 hover:bg-slate-200">
+                <Copy className="mr-2 h-4 w-4" />
+                Kopyala
+              </Button>
+              <Button onClick={openMap} variant="reverse" className="rounded-2xl bg-slate-100 font-heading text-avuc-text text-sm min-h-9 hover:bg-slate-200">
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Haritada Aç
+              </Button>
+            </div>
+            <Button onClick={() => setLocation(null)} variant="ghost" className="w-full text-xs text-avuc-muted hover:text-avuc-text">
+              Konumu Sıfırla
+            </Button>
           </div>
         )}
       </div>
@@ -417,20 +476,22 @@ function LocationShare({ onToast }) {
 
 function EmergencyNumbers() {
   const [search, setSearch] = useState('')
+  const [showAll, setShowAll] = useState(false)
   const filtered = EMERGENCY_NUMBERS.filter(n =>
     n.name.toLowerCase().includes(search.toLowerCase()) ||
     n.number.includes(search)
   )
+  const display = showAll || search ? filtered : filtered.filter(n => n.urgent).slice(0, 4)
 
   return (
-    <div className="rounded-[2rem] border border-avuc-line bg-white p-6 shadow-soft">
-      <div className="flex items-center gap-3 mb-5">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100">
-          <Phone className="h-7 w-7 text-blue-600" />
+    <div className="rounded-[2rem] border border-avuc-line bg-white p-5 shadow-soft">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100">
+          <Phone className="h-6 w-6 text-blue-600" />
         </div>
         <div>
-          <h3 className="text-lg font-black text-avuc-text">Acil Durum Numaraları</h3>
-          <p className="text-sm text-avuc-muted">Tek tıkla arama yapın</p>
+          <h3 className="text-base font-black text-avuc-text">Acil Numaralar</h3>
+          <p className="text-xs text-avuc-muted">Tek tıkla arama</p>
         </div>
       </div>
 
@@ -438,35 +499,48 @@ function EmergencyNumbers() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Ara..."
-        className="mb-4 w-full rounded-2xl border border-border bg-bw px-4 py-3 text-sm shadow-shadow placeholder:text-slate-500"
+        className="mb-3 w-full rounded-2xl border border-border bg-bw px-4 py-2.5 text-sm shadow-shadow placeholder:text-slate-500"
       />
 
-      <div className="grid gap-2 max-h-[400px] overflow-y-auto pr-1">
-        {filtered.map((item) => {
+      <div className="grid gap-2 max-h-[280px] overflow-y-auto pr-1">
+        {display.map((item) => {
           const Icon = item.icon
           return (
             <a
               key={item.number}
               href={`tel:${item.number}`}
-              className="flex items-center justify-between rounded-2xl border border-avuc-line bg-slate-50 p-4 transition hover:bg-slate-100"
+              className="flex items-center justify-between rounded-2xl border border-avuc-line bg-slate-50 p-3 transition hover:bg-slate-100"
             >
               <div className="flex items-center gap-3">
-                <div className={classNames('flex h-10 w-10 shrink-0 items-center justify-center rounded-xl', item.color)}>
-                  <Icon className="h-5 w-5 text-white" />
+                <div className={classNames('flex h-9 w-9 shrink-0 items-center justify-center rounded-xl', item.color)}>
+                  <Icon className="h-4 w-4 text-white" />
                 </div>
                 <div>
                   <p className="text-sm font-bold text-avuc-text">{item.name}</p>
-                  <p className="text-xs text-avuc-muted">{item.desc}</p>
+                  <p className="text-[11px] text-avuc-muted">{item.desc}</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-lg font-black text-avuc-text">{item.number}</p>
-                {item.urgent && <Badge className="mt-1 border-red-200 bg-red-50 text-red-600">Acil</Badge>}
+                <p className="text-base font-black text-avuc-text">{item.number}</p>
+                {item.urgent && <Badge className="mt-0.5 border-red-200 bg-red-50 text-red-600">Acil</Badge>}
               </div>
             </a>
           )
         })}
       </div>
+
+      {!search && (
+        <button
+          onClick={() => setShowAll(!showAll)}
+          className="mt-3 flex w-full items-center justify-center gap-1 rounded-2xl py-2 text-xs font-bold text-avuc-muted transition hover:bg-slate-50"
+        >
+          {showAll ? (
+            <><ChevronUp className="h-4 w-4" /> Daha az göster</>
+          ) : (
+            <><ChevronDown className="h-4 w-4" /> Tümünü göster ({EMERGENCY_NUMBERS.length})</>
+          )}
+        </button>
+      )}
     </div>
   )
 }
@@ -476,11 +550,11 @@ function QuickReport({ onToast, onLoginRequired }) {
   const [loading, setLoading] = useState(false)
   const { isLoggedIn } = useAuth()
   const types = [
-    { id: 'flood', label: 'Sel / Su Baskını', icon: Waves, color: 'bg-blue-500' },
+    { id: 'flood', label: 'Sel', icon: Waves, color: 'bg-blue-500' },
     { id: 'earthquake', label: 'Deprem', icon: Activity, color: 'bg-red-500' },
     { id: 'fire', label: 'Yangın', icon: Flame, color: 'bg-orange-500' },
     { id: 'landslide', label: 'Heyelan', icon: AlertTriangle, color: 'bg-amber-600' },
-    { id: 'storm', label: 'Fırtına / Hortum', icon: Wind, color: 'bg-cyan-500' },
+    { id: 'storm', label: 'Fırtına', icon: Wind, color: 'bg-cyan-500' },
     { id: 'other', label: 'Diğer', icon: AlertTriangle, color: 'bg-slate-500' },
   ]
 
@@ -516,14 +590,14 @@ function QuickReport({ onToast, onLoginRequired }) {
   }
 
   return (
-    <div className="rounded-[2rem] border border-avuc-line bg-white p-6 shadow-soft">
-      <div className="flex items-center gap-3 mb-5">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-100">
-          <AlertTriangle className="h-7 w-7 text-red-600" />
+    <div className="rounded-[2rem] border border-red-200 bg-white p-5 shadow-soft ring-1 ring-red-100">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-100">
+          <AlertTriangle className="h-6 w-6 text-red-600" />
         </div>
         <div>
-          <h3 className="text-lg font-black text-avuc-text">Anlık Afet İhbarı</h3>
-          <p className="text-sm text-avuc-muted">Bölgenizdeki afeti bildirin</p>
+          <h3 className="text-base font-black text-avuc-text">Anlık Afet İhbarı</h3>
+          <p className="text-xs text-avuc-muted">Bölgenizdeki afeti bildirin</p>
         </div>
       </div>
 
@@ -536,14 +610,14 @@ function QuickReport({ onToast, onLoginRequired }) {
               key={t.id}
               onClick={() => setDisasterType(t.id)}
               className={classNames(
-                'flex flex-col items-center gap-2 rounded-2xl border p-3 transition',
+                'flex flex-col items-center gap-1.5 rounded-2xl border p-2.5 transition',
                 selected ? 'border-avuc-red bg-avuc-lightRed' : 'border-avuc-line bg-slate-50 hover:bg-slate-100'
               )}
             >
-              <div className={classNames('flex h-10 w-10 items-center justify-center rounded-xl', selected ? t.color : 'bg-slate-200')}>
-                <Icon className={classNames('h-5 w-5', selected ? 'text-white' : 'text-slate-500')} />
+              <div className={classNames('flex h-9 w-9 items-center justify-center rounded-xl', selected ? t.color : 'bg-slate-200')}>
+                <Icon className={classNames('h-4 w-4', selected ? 'text-white' : 'text-slate-500')} />
               </div>
-              <span className={classNames('text-[11px] font-bold', selected ? 'text-avuc-red' : 'text-avuc-muted')}>{t.label}</span>
+              <span className={classNames('text-[11px] font-bold leading-tight', selected ? 'text-avuc-red' : 'text-avuc-muted')}>{t.label}</span>
             </button>
           )
         })}
@@ -553,7 +627,7 @@ function QuickReport({ onToast, onLoginRequired }) {
         onClick={submit}
         disabled={loading}
         variant="reverse"
-        className="mt-5 w-full min-h-12 rounded-2xl bg-avuc-red font-heading text-white disabled:opacity-50"
+        className="mt-4 w-full min-h-11 rounded-2xl bg-avuc-red font-heading text-white text-sm disabled:opacity-50"
       >
         <Siren className="mr-2 h-4 w-4" />
         {loading ? 'Gönderiliyor...' : 'İhbar Gönder'}
@@ -562,40 +636,54 @@ function QuickReport({ onToast, onLoginRequired }) {
   )
 }
 
+function SectionHeader({ icon: Icon, title, color = 'text-avuc-text' }) {
+  return (
+    <div className="flex items-center gap-2 mb-3">
+      <Icon className={classNames('h-5 w-5', color)} />
+      <h2 className="text-base font-black text-avuc-text">{title}</h2>
+    </div>
+  )
+}
+
 export default function EmergencyHub({ onToast, onLoginRequired }) {
   return (
-    <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mb-8 text-center">
+    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mb-6 text-center">
         <Badge className="border-red-200 bg-red-50 text-red-600">Acil Durum Merkezi</Badge>
-        <h1 className="mt-4 text-3xl font-black tracking-tight text-avuc-text sm:text-4xl">
+        <h1 className="mt-3 text-2xl font-black tracking-tight text-avuc-text sm:text-3xl">
           Anlık Yardım ve İhbar Araçları
         </h1>
-        <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-avuc-muted">
-          Afet anında kullanabileceğiniz tüm acil araçları tek yerde. Siren, mors kodu, konum paylaşımı ve anlık ihbar.
+        <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-avuc-muted">
+          Afet anında kullanabileceğiniz acil araçlar. Hızlı ihbar, siren, mors kodu, konum paylaşımı ve anlık yayın.
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        <QuickReport onToast={onToast} onLoginRequired={onLoginRequired} />
-        <SosAlarm />
-        <MorseLed />
-        <LocationShare onToast={onToast} />
-        <EmergencyNumbers />
-        <div className="rounded-[2rem] border border-avuc-line bg-white p-6 shadow-soft">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-100">
-              <Radio className="h-7 w-7 text-purple-600" />
-            </div>
-            <div>
-              <h3 className="text-lg font-black text-avuc-text">Acil Radyo</h3>
-              <p className="text-sm text-avuc-muted">Anlık afet yayınları</p>
-            </div>
-          </div>
-          <p className="text-sm text-avuc-muted">
-            TRT Radyo 1 ve AFAD frekansları üzerinden anlık yayınlar. Radyo sayfasına gidin.
-          </p>
+      {/* Section 1: Hızlı Eylem */}
+      <section className="mb-8">
+        <SectionHeader icon={AlertTriangle} title="Hızlı Eylem" color="text-red-500" />
+        <div className="grid gap-4 md:grid-cols-2 items-start">
+          <QuickReport onToast={onToast} onLoginRequired={onLoginRequired} />
+          <LocationShare onToast={onToast} />
         </div>
-      </div>
+      </section>
+
+      {/* Section 2: Sinyal Araçları */}
+      <section className="mb-8">
+        <SectionHeader icon={Flashlight} title="Sinyal Araçları" color="text-amber-500" />
+        <div className="grid gap-4 md:grid-cols-2 items-start">
+          <SosAlarm />
+          <MorseLed />
+        </div>
+      </section>
+
+      {/* Section 3: İletişim ve Yayın */}
+      <section className="mb-8">
+        <SectionHeader icon={Phone} title="İletişim ve Yayın" color="text-blue-500" />
+        <div className="grid gap-4 md:grid-cols-2 items-start">
+          <EmergencyNumbers />
+          <EmergencyRadio compact />
+        </div>
+      </section>
     </main>
   )
 }

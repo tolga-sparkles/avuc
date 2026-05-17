@@ -65,7 +65,7 @@ function App() {
     return () => window.clearTimeout(timeout)
   }, [toast])
 
-  // useServiceWorker() // Service worker geçici devre dışı (cache sorunları için)
+  useServiceWorker()
 
   useEffect(() => {
     if (online && getQueueLength() > 0) {

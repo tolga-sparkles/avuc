@@ -29,7 +29,7 @@ export function getReportTypeColor(type) {
   return colors[type] || colors.other
 }
 
-export default function DisasterReportsSection({ reports, loading }) {
+export default function DisasterReportsSection({ reports, loading, error }) {
   const [expanded, setExpanded] = useState(false)
   const display = expanded ? reports : reports.slice(0, 3)
 
@@ -50,6 +50,13 @@ export default function DisasterReportsSection({ reports, loading }) {
         <div className="flex items-center gap-2 text-sm text-avuc-muted">
           <Activity className="h-4 w-4 animate-pulse" />
           İhbarlar yükleniyor...
+        </div>
+      ) : error ? (
+        <div className="rounded-[2rem] border border-red-200 bg-red-50 p-6 shadow-soft text-center">
+          <AlertOctagon className="mx-auto h-8 w-8 text-red-500" />
+          <p className="mt-3 text-sm font-bold text-red-700">İhbarlar alınamadı</p>
+          <p className="mt-1 text-xs text-red-600">{error}</p>
+          <p className="mt-2 text-xs text-red-500">Tarayıcı konsolunu (F12) kontrol edin veya sayfayı yenileyin.</p>
         </div>
       ) : reports.length === 0 ? (
         <div className="rounded-[2rem] border border-avuc-line bg-white p-8 shadow-soft text-center">

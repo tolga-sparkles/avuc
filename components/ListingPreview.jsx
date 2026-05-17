@@ -25,7 +25,7 @@ export default function ListingPreview({ data, categoryLabel, images = [] }) {
         <div className="grid grid-cols-3 gap-2">
           {images.slice(0, 3).map((img, i) => (
             <div key={img.id} className={classNames('aspect-square overflow-hidden rounded-2xl bg-slate-100', i === 0 ? 'col-span-2 row-span-2' : '')}>
-              <img src={img.preview} alt="" className="h-full w-full object-cover" />
+              <img src={img.preview} alt="" loading="lazy" className="h-full w-full object-cover" />
             </div>
           ))}
         </div>

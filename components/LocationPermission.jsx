@@ -6,7 +6,7 @@ function classNames(...classes) {
 }
 
 export function useLocationPermission() {
-  const [permission, setPermission] = useState('prompt') // 'prompt' | 'granted' | 'denied' | 'unknown'
+  const [permission, setPermission] = useState('unknown') // 'prompt' | 'granted' | 'denied' | 'unknown'
   const [showHelp, setShowHelp] = useState(false)
 
   const checkPermission = useCallback(async () => {
@@ -14,14 +14,18 @@ export function useLocationPermission() {
       setPermission('unknown')
       return
     }
-    if ('permissions' in navigator) {
+    if ('permissions' in navigator && navigator.permissions.query) {
       try {
         const result = await navigator.permissions.query({ name: 'geolocation' })
         setPermission(result.state) // 'granted' | 'denied' | 'prompt'
-        result.onchange = () => setPermission(result.state)
+        if (result.onchange !== undefined) {
+          result.onchange = () => setPermission(result.state)
+        }
       } catch {
         setPermission('unknown')
       }
+    } else {
+      setPermission('unknown')
     }
   }, [])
 

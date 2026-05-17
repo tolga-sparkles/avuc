@@ -192,7 +192,7 @@ export default function CreateListingPage({ onToast, onLoginRequired }) {
         description="Seçilen kategoriye göre ilgili kısa form açılır. Harita üzerinden konum seçebilir ve fotoğraf ekleyebilirsiniz."
       />
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-        <aside className="grid h-fit gap-3 rounded-[2rem] border border-avuc-line bg-white p-4 shadow-soft">
+        <aside className="flex h-fit gap-2 overflow-x-auto rounded-[2rem] border border-avuc-line bg-white p-3 shadow-soft lg:grid lg:gap-3 lg:overflow-visible lg:p-4">
           {createCategories.map((item) => {
             const isActive = category === item
             const cfg = categoryStyle(item)
@@ -202,14 +202,14 @@ export default function CreateListingPage({ onToast, onLoginRequired }) {
                 key={item}
                 onClick={() => setCategory(item)}
                 className={classNames(
-                  'inline-flex items-center gap-3.5 rounded-[20px] px-5 py-[16px] text-left text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5',
+                  'inline-flex shrink-0 items-center gap-2 rounded-[20px] px-4 py-3 text-left text-sm font-semibold transition-all duration-200 lg:w-full lg:gap-3.5 lg:px-5 lg:py-[16px]',
                   isActive ? 'ring-2 ring-offset-2 ' + cfg.ring : '',
                   cfg.bg,
                   cfg.text
                 )}
               >
                 <Icon className="h-[18px] w-[18px] shrink-0" />
-                <span>{item}</span>
+                <span className="whitespace-nowrap">{item}</span>
               </button>
             )
           })}

@@ -76,9 +76,36 @@ async function resolveReport(req, res, next) {
   }
 }
 
+async function getDisasterReports(req, res, next) {
+  try {
+    const reports = await prisma.disasterReport.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+    });
+    res.json(reports);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function resolveDisasterReport(req, res, next) {
+  try {
+    const { id } = req.params;
+    const report = await prisma.disasterReport.update({
+      where: { id },
+      data: { status: 'RESOLVED' },
+    });
+    res.json(report);
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getStats,
   getPendingListings,
   getReports,
   resolveReport,
+  getDisasterReports,
+  resolveDisasterReport,
 };

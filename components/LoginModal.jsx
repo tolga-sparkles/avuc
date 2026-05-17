@@ -120,8 +120,8 @@ export default function LoginModal({ open, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-[90] flex items-end bg-slate-950/50 p-4 backdrop-blur-sm sm:items-center sm:justify-center" role="dialog" aria-modal="true">
-      <div className="w-full max-w-md animate-slide-up rounded-[2rem] bg-white p-5 shadow-2xl sm:p-7">
+    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
+      <div className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-[2rem] bg-white p-5 shadow-2xl sm:p-7">
         <div className="flex items-center justify-between gap-4">
           <div className="flex gap-2">
             <button

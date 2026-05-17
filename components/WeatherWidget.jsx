@@ -51,10 +51,11 @@ const weatherCodeMap = {
 const AFET_RISK_CODES = [65, 75, 80, 81, 82, 95, 96, 99]
 
 export default function WeatherWidget({ compact = false, onToast }) {
-  const FIXED_LOCATION = { lat: 36.978807, lon: 37.299867, name: 'Gaziantep İBTÜ' }
+  const FIXED_LOCATION = { lat: 39.9208, lon: 32.8541, name: 'Ankara' }
 
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [city, setCity] = useState(FIXED_LOCATION.name)
   const [coords, setCoords] = useState({ lat: FIXED_LOCATION.lat, lon: FIXED_LOCATION.lon })
   const [forecast, setForecast] = useState([])
@@ -62,11 +63,14 @@ export default function WeatherWidget({ compact = false, onToast }) {
 
   const fetchWeather = async (lat, lon) => {
     setLoading(true)
+    setError(null)
     try {
       const res = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,pressure_msl,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto&forecast_days=5&lang=tr`
       )
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const json = await res.json()
+      if (!json.current) throw new Error('Geçersiz veri')
       setData(json.current)
       if (json.daily) {
         const days = []
@@ -81,8 +85,10 @@ export default function WeatherWidget({ compact = false, onToast }) {
         }
         setForecast(days)
       }
-    } catch {
-      onToast?.('Hava durumu verisi alınamadı')
+    } catch (err) {
+      console.error('[WeatherWidget] fetch error:', err)
+      setError(err.message || 'Hava durumu verisi alınamadı')
+      onToast?.('Hava durumu verisi alınamadı. İnternet bağlantınızı kontrol edin.')
     } finally {
       setLoading(false)
     }
@@ -169,7 +175,23 @@ export default function WeatherWidget({ compact = false, onToast }) {
     )
   }
 
-  if (!data) return null
+  if (error || !data) {
+    return (
+      <div className={classNames('rounded-[2rem] border border-red-200 bg-red-50 shadow-soft', compact ? 'p-6' : 'p-10')}>
+        <div className="text-center">
+          <AlertTriangle className="mx-auto h-8 w-8 text-red-500" />
+          <p className="mt-3 text-sm font-bold text-red-700">Hava durumu verisi alınamadı</p>
+          <p className="mt-1 text-xs text-red-600">{error || 'Veri yüklenemedi'}</p>
+          <button
+            onClick={() => fetchWeather(coords.lat, coords.lon)}
+            className="mt-4 rounded-2xl bg-red-100 px-4 py-2 text-xs font-bold text-red-700 transition hover:bg-red-200"
+          >
+            Tekrar Dene
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   const weatherInfo = weatherCodeMap[data.weather_code] || weatherCodeMap[0]
   const WeatherIcon = weatherInfo.icon

@@ -1,8 +1,7 @@
-const CACHE_NAME = 'avuc-cache-v1'
+const CACHE_NAME = 'avuc-cache-v2'
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/main.jsx',
   '/avuc-logo.svg',
   '/icon-192.png',
   '/icon-512.png',
@@ -46,6 +45,21 @@ self.addEventListener('fetch', (event) => {
           return response
         })
         .catch(() => caches.match(request))
+    )
+    return
+  }
+
+  // Vite module files (hashed): stale-while-revalidate
+  if (url.pathname.startsWith('/assets/')) {
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        const fetchPromise = fetch(request).then((response) => {
+          const clone = response.clone()
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone))
+          return response
+        }).catch(() => cached)
+        return cached || fetchPromise
+      })
     )
     return
   }
