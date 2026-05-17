@@ -9,6 +9,7 @@ import { usePullToRefresh } from '@/hooks/usePullToRefresh'
 import { disasterZones } from '@/data'
 import { getUrgencyClass } from '@/utils/constants'
 import { classNames } from '@/utils/classNames'
+import { GlobeLive } from '@/components/ui/cobe-globe-live'
 
 function getMagnitudeColor(mag) {
   if (mag >= 5.0) return 'bg-red-600 text-white'
@@ -31,53 +32,53 @@ export default function HomePage({ onNavigate }) {
       <section className="relative -mt-12 overflow-hidden rounded-b-[2.5rem] bg-transparent pt-12">
         <div className="absolute left-8 top-6 h-24 w-24 rounded-full bg-avuc-lightBlue/60 blur-2xl" />
         <div className="absolute bottom-6 right-12 h-32 w-32 rounded-full bg-avuc-lightGreen/60 blur-2xl" />
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:py-12">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:py-12">
           <div className="relative z-10 flex flex-col justify-center">
             <Badge className="w-fit border-avuc-blue/20 bg-avuc-lightBlue text-avuc-darkBlue">Koordinasyon ağı</Badge>
-            <h1 className="mt-5 max-w-4xl text-3xl font-black tracking-tight text-avuc-text sm:text-4xl lg:text-5xl">
+            <h1 className="mt-5 max-w-3xl text-3xl font-black tracking-tight text-avuc-text sm:text-4xl lg:text-[2.8rem] lg:leading-[1.05]">
               Afet Anında Yardımı Doğru Kişiye Ulaştır
             </h1>
-            <p className="mt-4 max-w-xl text-base leading-7 text-avuc-muted">
+            <p className="mt-4 max-w-lg text-[15px] leading-7 text-avuc-muted">
               Barınma, lojistik ve bağışı tek akışta eşleştirir.
             </p>
             <div className="mt-6 grid gap-2.5 sm:grid-cols-2">
               <button
                 onClick={() => onNavigate('shelter')}
-                className="inline-flex items-center justify-start gap-3 rounded-[16px] bg-avuc-blue px-5 py-3.5 text-sm font-bold text-white shadow-[0_4px_14px_rgba(37,99,235,0.25)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-600 hover:shadow-[0_6px_20px_rgba(37,99,235,0.35)]"
+                className="inline-flex items-center justify-start gap-3 rounded-[16px] bg-avuc-blue px-4 py-3 text-sm font-bold text-white shadow-[0_4px_14px_rgba(37,99,235,0.25)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-600 hover:shadow-[0_6px_20px_rgba(37,99,235,0.35)]"
               >
                 <Home className="h-4 w-4" />
                 <span>Kalacak Yer</span>
               </button>
               <button
                 onClick={() => onNavigate('host')}
-                className="inline-flex items-center justify-start gap-3 rounded-[16px] bg-[#e6fdf5] px-5 py-3.5 text-sm font-semibold text-[#0fa968] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#cbfbe7]"
+                className="inline-flex items-center justify-start gap-3 rounded-[16px] bg-[#e6fdf5] px-4 py-3 text-sm font-semibold text-[#0fa968] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#cbfbe7]"
               >
                 <LogIn className="h-4 w-4" />
                 <span>Evimi Aç</span>
               </button>
               <button
                 onClick={() => onNavigate('match')}
-                className="inline-flex items-center justify-start gap-3 rounded-[16px] bg-[#fff4e6] px-5 py-3.5 text-sm font-semibold text-[#b76e00] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#ffe8cc]"
+                className="inline-flex items-center justify-start gap-3 rounded-[16px] bg-[#fff4e6] px-4 py-3 text-sm font-semibold text-[#b76e00] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#ffe8cc]"
               >
                 <Truck className="h-4 w-4" />
                 <span>Yardım Götür</span>
               </button>
               <button
                 onClick={() => onNavigate('donations')}
-                className="inline-flex items-center justify-start gap-3 rounded-[16px] bg-[#f3e8ff] px-5 py-3.5 text-sm font-semibold text-[#6b21a8] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#e9d5ff]"
+                className="inline-flex items-center justify-start gap-3 rounded-[16px] bg-[#f3e8ff] px-4 py-3 text-sm font-semibold text-[#6b21a8] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#e9d5ff]"
               >
                 <HandCoins className="h-4 w-4" />
                 <span>Bağış Yap</span>
               </button>
             </div>
-            <div className="mt-6 grid grid-cols-3 gap-3 text-center">
+            <div className="mt-5 grid grid-cols-3 gap-3 text-center">
               {[
                 [248, 'Aktif ilan'],
                 [71, 'Eşleşen yardım'],
                 [96, 'Güven puanı', '%'],
               ].map(([value, label, suffix]) => (
-                <div key={label} className="rounded-2xl border border-avuc-line bg-white p-3.5 shadow-soft">
-                  <p className="text-xl font-black text-avuc-text">
+                <div key={label} className="rounded-2xl border border-avuc-line bg-white p-3 shadow-soft">
+                  <p className="text-lg font-black text-avuc-text">
                     <AnimatedCounter target={value} duration={2000} suffix={suffix || ''} />
                   </p>
                   <p className="mt-1 text-[11px] font-semibold text-avuc-muted">{label}</p>
@@ -86,65 +87,13 @@ export default function HomePage({ onNavigate }) {
             </div>
           </div>
 
-          <div className="relative hidden flex-col gap-3 overflow-hidden rounded-[2rem] border border-avuc-line bg-white p-5 shadow-soft lg:flex">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-black uppercase tracking-[0.15em] text-avuc-muted">Canlı durum</p>
-              <span className="flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-1 text-[10px] font-bold text-green-600">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-green-500" />
-                Online
-              </span>
+          <div className="relative flex min-h-[360px] items-center justify-center overflow-visible sm:min-h-[470px] lg:min-h-[620px]">
+            <div className="absolute left-0 top-0 z-10">
+              <p className="text-sm font-black tracking-[0.2em] text-avuc-muted">birOS Ağ</p>
+              <p className="mt-2 max-w-xs text-sm leading-6 text-avuc-muted">Afet ağı gerçek zamanlı olarak toplanmaktadır.</p>
             </div>
-
-            <div className="grid grid-cols-2 gap-2.5">
-              <div className="rounded-xl bg-slate-50 p-3">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-avuc-muted">Aktif ilan</p>
-                <p className="mt-1 text-2xl font-black text-avuc-text">248</p>
-              </div>
-              <div className="rounded-xl bg-slate-50 p-3">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-avuc-muted">Eşleşme</p>
-                <p className="mt-1 text-2xl font-black text-avuc-text">71</p>
-              </div>
-              <div className="rounded-xl bg-slate-50 p-3">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-avuc-muted">Yanıt süresi</p>
-                <p className="mt-1 text-2xl font-black text-avuc-text">8 dk</p>
-              </div>
-              <div className="rounded-xl bg-slate-50 p-3">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-avuc-muted">Güven</p>
-                <p className="mt-1 text-2xl font-black text-avuc-text">96%</p>
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-avuc-line bg-slate-50 p-3">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-avuc-muted mb-2">Son depremler</p>
-              {quakes.slice(0, 3).map((q) => (
-                <div key={`${q.detailUrl}-${q.date}`} className="flex items-center gap-2 py-1.5 border-b border-slate-100 last:border-0">
-                  <span className={classNames('flex h-6 w-6 items-center justify-center rounded-lg text-[10px] font-black', getMagnitudeColor(q.magnitude))}>
-                    {q.magnitude.toFixed(1)}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-bold text-avuc-text">{q.location}</p>
-                    <p className="text-[10px] text-avuc-muted">{q.date}</p>
-                  </div>
-                </div>
-              ))}
-              {quakes.length === 0 && !quakesLoading && (
-                <p className="py-2 text-xs text-avuc-muted">Veri yükleniyor...</p>
-              )}
-            </div>
-
-            <div className="mt-auto rounded-xl bg-gradient-to-r from-blue-50 to-green-50 p-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-bold text-avuc-text">Afet Koordinasyonu</p>
-                  <p className="text-[10px] text-avuc-muted">Gerçek zamanlı eşleştirme aktif</p>
-                </div>
-                <div className="flex -space-x-1.5">
-                  {['bg-blue-500', 'bg-green-500', 'bg-amber-500', 'bg-purple-500'].map((c, i) => (
-                    <div key={i} className={classNames('h-5 w-5 rounded-full border-2 border-white', c)} />
-                  ))}
-                </div>
-              </div>
-            </div>
+            <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_52%_58%,rgba(219,234,254,0.5),transparent_48%),radial-gradient(circle_at_76%_72%,rgba(220,252,231,0.42),transparent_36%)]" />
+            <GlobeLive className="relative z-10 mt-14 w-[min(390px,118%)] max-w-none sm:w-[min(560px,125%)] lg:mt-8 lg:w-[min(900px,160%)]" />
           </div>
         </div>
       </section>

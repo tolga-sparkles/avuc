@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
 import { Home, Shield, CloudRain, Map, PackagePlus, HandCoins, AlertOctagon, LogIn, LogOut, User, Menu, X, Siren } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { classNames } from '@/utils/classNames'
@@ -29,10 +28,10 @@ function MenuGroup({ title, items, activePage, onNavigate }) {
               onClick={() => onNavigate(item.id)}
               className={classNames(
                 'flex items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-semibold transition active:scale-95',
-                isActive ? 'bg-slate-100 text-slate-900' : 'text-slate-500 hover:bg-slate-50',
+                isActive ? 'bg-[#dbeafe] text-slate-950 shadow-sm' : 'text-slate-500 hover:bg-white/55',
               )}
             >
-              {Icon && <Icon className="h-3.5 w-3.5 shrink-0" />}
+              {Icon && <Icon className={classNames('h-3.5 w-3.5 shrink-0', isActive ? 'text-blue-600' : 'text-slate-500')} strokeWidth={2.2} />}
               {item.label}
             </button>
           )
@@ -52,7 +51,7 @@ export function Header({ activePage, onNavigate, onLogin, user, isLoggedIn, isAd
 
   return (
     <header className="sticky top-2 z-50 px-3 sm:px-4">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl border border-slate-200/60 bg-white/80 px-3 py-2 shadow-[0_2px_16px_rgba(15,23,42,0.05)] backdrop-blur-md">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between rounded-2xl border border-slate-200/60 bg-white/80 px-3 py-2 shadow-[0_2px_16px_rgba(15,23,42,0.05)] backdrop-blur-md">
         {/* Logo */}
         <button
           onClick={() => goTo('home')}
@@ -74,19 +73,12 @@ export function Header({ activePage, onNavigate, onLogin, user, isLoggedIn, isAd
                 className={classNames(
                   'relative flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-xs font-semibold transition-all duration-150',
                   isActive
-                    ? item.primary
-                      ? 'bg-orange-500 text-white shadow-sm'
-                      : 'bg-slate-100 text-slate-900'
-                    : item.primary
-                      ? 'text-orange-600 hover:bg-orange-50'
-                      : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700',
+                    ? 'bg-[#dbeafe] text-slate-950 shadow-sm'
+                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700',
                 )}
               >
                 {Icon && <Icon className="h-3.5 w-3.5" />}
                 <span>{item.label}</span>
-                {isActive && !item.primary && (
-                  <span className="absolute bottom-1 left-1/2 h-0.5 w-4 -translate-x-1/2 rounded-full bg-slate-400" />
-                )}
               </button>
             )
           })}
@@ -99,7 +91,7 @@ export function Header({ activePage, onNavigate, onLogin, user, isLoggedIn, isAd
               onClick={() => goTo('admin')}
               className={classNames(
                 'rounded-xl px-3.5 py-2.5 text-sm font-semibold transition',
-                activePage === 'admin' ? 'bg-slate-100 text-slate-900' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700',
+                activePage === 'admin' ? 'bg-[#dbeafe] text-slate-950' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700',
               )}
             >
               Admin
@@ -114,7 +106,7 @@ export function Header({ activePage, onNavigate, onLogin, user, isLoggedIn, isAd
                 onClick={() => goTo('profile')}
                 className={classNames(
                   'flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition',
-                  activePage === 'profile' ? 'bg-slate-100 text-slate-900' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700',
+                  activePage === 'profile' ? 'bg-[#dbeafe] text-slate-950' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700',
                 )}
               >
                 <User className="h-4 w-4" />
@@ -170,7 +162,7 @@ export function Header({ activePage, onNavigate, onLogin, user, isLoggedIn, isAd
         </div>
       </nav>
 
-      {/* Mobile dropdown — sadece bottom nav'da olmayan sayfalar */}
+      {/* Mobile dropdown */}
       {open && (
         <div
           id="mobile-menu"
@@ -195,7 +187,7 @@ export function Header({ activePage, onNavigate, onLogin, user, isLoggedIn, isAd
                 onClick={() => goTo('admin')}
                 className={classNames(
                   'flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold transition',
-                  activePage === 'admin' ? 'bg-slate-100 text-slate-900' : 'text-slate-500 hover:bg-slate-50',
+                  activePage === 'admin' ? 'bg-[#dbeafe] text-slate-950' : 'text-slate-500 hover:bg-slate-50',
                 )}
               >
                 <User className="h-4 w-4" />
