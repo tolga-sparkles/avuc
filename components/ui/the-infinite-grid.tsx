@@ -43,20 +43,20 @@ export const Component = () => {
       )}
       aria-hidden="true"
     >
-      <div className="absolute inset-0 z-0 opacity-[0.05]">
+      <div className="absolute inset-0 z-0 opacity-[0.025]">
         <GridPattern offsetX={gridOffsetX} offsetY={gridOffsetY} />
       </div>
       <motion.div
-        className="absolute inset-0 z-0 opacity-40"
+        className="absolute inset-0 z-0 opacity-15"
         style={{ maskImage, WebkitMaskImage: maskImage }}
       >
         <GridPattern offsetX={gridOffsetX} offsetY={gridOffsetY} />
       </motion.div>
 
       <div className="pointer-events-none absolute inset-0 z-0">
-        <div className="absolute right-[-20%] top-[-20%] h-[40%] w-[40%] rounded-full bg-orange-500/30 blur-[120px]" />
-        <div className="absolute right-[10%] top-[-10%] h-[20%] w-[20%] rounded-full bg-primary/30 blur-[100px]" />
-        <div className="absolute bottom-[-20%] left-[-10%] h-[40%] w-[40%] rounded-full bg-blue-500/30 blur-[120px]" />
+        <div className="absolute right-[-20%] top-[-20%] h-[40%] w-[40%] rounded-full bg-orange-500/15 blur-[100px]" />
+        <div className="absolute right-[10%] top-[-10%] h-[20%] w-[20%] rounded-full bg-primary/15 blur-[80px]" />
+        <div className="absolute bottom-[-20%] left-[-10%] h-[40%] w-[40%] rounded-full bg-blue-500/15 blur-[100px]" />
       </div>
     </div>
   )

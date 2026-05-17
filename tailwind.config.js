@@ -1,6 +1,17 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,jsx,ts,tsx}', './lib/**/*.{js,ts}'],
+  content: [
+    './index.html',
+    './*.{js,jsx,ts,tsx}',
+    './src/**/*.{js,jsx,ts,tsx}',
+    './pages/**/*.{js,jsx,ts,tsx}',
+    './components/**/*.{js,jsx,ts,tsx}',
+    './hooks/**/*.{js,ts}',
+    './utils/**/*.{js,ts}',
+    './context/**/*.{js,jsx,ts,tsx}',
+    './services/**/*.{js,ts}',
+    './lib/**/*.{js,ts}',
+  ],
   theme: {
     extend: {
       colors: {

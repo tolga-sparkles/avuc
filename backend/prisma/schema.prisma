@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String    @id @default(cuid())
+  name               String
+  phone              String    @unique
+  email              String?   @unique
+  passwordHash       String
+  identityVerified   Boolean   @default(false)
+  phoneVerified      Boolean   @default(false)
+  role               String    @default("USER")
+  score              Int       @default(0)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  listings           Listing[]
+  participations     TaskParticipation[]
+  notifications      Notification[]
+}
+
+model Listing {
+  id            String    @id @default(cuid())
+  type          String
+  category      String
+  city          String
+  district      String
+  location      String
+  title         String
+  description   String
+  capacity      Int?
+  duration      String?
+  amenities     String?
+  lat           Float?
+  lng           Float?
+  expiresAt     DateTime?
+  status        String    @default("PENDING")
+  verified      Boolean   @default(false)
+  userId        String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user          User      @relation(fields: [userId], references: [id])
+  reports       ListingReport[]
+  matches1      Match[]   @relation("MatchListing1")
+  matches2      Match[]   @relation("MatchListing2")
+}
+
+model ListingReport {
+  id        String    @id @default(cuid())
+  listingId String
+  reason    String
+  status    String    @default("OPEN")
+  createdAt DateTime  @default(now())
+
+  listing   Listing   @relation(fields: [listingId], references: [id])
+}
+
+model Donation {
+  id          String    @id @default(cuid())
+  packageName String
+  items       String?
+  amount      String
+  donorName   String?
+  status      String    @default("RECEIVED")
+  createdAt   DateTime  @default(now())
+}
+
+model VolunteerTask {
+  id          String              @id @default(cuid())
+  title       String
+  location    String
+  time        String
+  people      Int
+  description String
+  joinedCount Int                 @default(0)
+  createdAt   DateTime            @default(now())
+
+  participants TaskParticipation[]
+}
+
+model TaskParticipation {
+  id        String        @id @default(cuid())
+  taskId    String
+  userId    String
+  createdAt DateTime      @default(now())
+
+  task      VolunteerTask @relation(fields: [taskId], references: [id])
+  user      User          @relation(fields: [userId], references: [id])
+
+  @@unique([taskId, userId])
+}
+
+model Match {
+  id          String    @id @default(cuid())
+  listingId1  String
+  listingId2  String
+  status      String    @default("PENDING")
+  createdAt   DateTime  @default(now())
+
+  listing1    Listing   @relation("MatchListing1", fields: [listingId1], references: [id])
+  listing2    Listing   @relation("MatchListing2", fields: [listingId2], references: [id])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String?
+  type      String
+  message   String
+  read      Boolean   @default(false)
+  createdAt DateTime  @default(now())
+
+  user      User?     @relation(fields: [userId], references: [id])
+}
+
+model DisasterReport {
+  id          String   @id @default(cuid())
+  type        String
+  description String
+  city        String?
+  district    String?
+  lat         Float?
+  lng         Float?
+  name        String?
+  phone       String?
+  status      String   @default("ACTIVE")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

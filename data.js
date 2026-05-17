@@ -1,3 +1,22 @@
+export const aidTypes = [
+  'Aracım var, yardım taşıyabilirim',
+  'Erzağım var, araç arıyorum',
+  'Depom var, yardımlar burada toplanabilir',
+  'Gönüllüyüm, dağıtıma katılabilirim',
+  'Yardım götürmek istiyorum ama ekip arıyorum',
+  'Yardım bölgesinde ihtiyaç bildiriyorum',
+]
+
+export const createCategories = [
+  'Kalacak yer sunuyorum',
+  'Kalacak yer arıyorum',
+  'Aracım var',
+  'Erzağım var',
+  'Depom var',
+  'Gönüllüyüm',
+  'Acil ihtiyaç bildiriyorum',
+]
+
 export const navItems = [
   { id: 'home', label: 'Ana Sayfa' },
   { id: 'shelter', label: 'Barınma' },
@@ -5,13 +24,14 @@ export const navItems = [
   { id: 'donations', label: 'Bağış Yap' },
   { id: 'map', label: 'Afet Haritası' },
   { id: 'volunteer', label: 'Gönüllü Ol' },
+  { id: 'reports', label: 'İhbarlar' },
   { id: 'profile', label: 'Profil' },
 ]
 
 export const mobileNavItems = [
   { id: 'home', label: 'Ana Sayfa', short: 'Ana' },
   { id: 'map', label: 'Harita', short: 'Harita' },
-  { id: 'create', label: 'İlan Ver', short: 'İlan' },
+  { id: 'reports', label: 'İhbarlar', short: 'İhbar' },
   { id: 'donations', label: 'Bağış', short: 'Bağış' },
   { id: 'profile', label: 'Profil', short: 'Profil' },
 ]
